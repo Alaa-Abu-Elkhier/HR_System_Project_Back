@@ -17,7 +17,7 @@ router.get('/', async(req ,res) => {
 
  router.get('/:name', async(req, res) =>{
     const employee= await Employee.findOne({name:req.params.name});
-    if(!employee) return res.status(404).send('the customer with the given name was not found');
+    if(!employee) return res.status(404).send('the Empolyee with the given name was not found');
     res.send(employee);
  });
 
