@@ -20,7 +20,7 @@ const employeeSchema= new mongoose.Schema(
             type:String,
             required: true,
             minlength:8,
-            maxlength:50
+            
         },
         position:String
 
@@ -33,7 +33,7 @@ function validateEmployee(employee){
     const schema ={
         name:Joi.string().min(4).max(50).required(),
         e_mail:Joi.string().required().email(),
-        password:Joi.string().min(8).max(50).required(),
+        password:Joi.string().min(8).required(),
         department:Joi.string().required(),
         position:Joi.string().required(),
         project:Joi.string().required(),

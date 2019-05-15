@@ -1,7 +1,9 @@
 const mongoose= require('mongoose');
+const jwt = require('jsonwebtoken');
 const express = require('express');
 const {Employee, validateEmployee} = require('../models/employee');  //exported file
 const router = express.Router();
+const bcrypt = require("bcrypt");
 
 //all employees
 router.get('/', async(req ,res) => {
@@ -17,11 +19,12 @@ router.get('/', async(req ,res) => {
 
  router.get('/:name', async(req, res) =>{
     const employee= await Employee.findOne({name:req.params.name});
-    if(!employee) return res.status(404).send('the Empolyee with the given name was not found');
+    if(!employee) return res.status(404).send('the customer with the given name was not found');
     res.send(employee);
  });
 
 router.post('/', async(req, res) => {
+    console.log("Entered backend")
     const {error} =validateEmployee(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -34,8 +37,14 @@ router.post('/', async(req, res) => {
          password:req.body.password,
          position:req.body.position
         });
+        const salt = await bcrypt.genSalt(10);   
+        employee.password=await bcrypt.hash(req.body.password,salt);
+
         employee= await employee.save();  
-    res.send(employee)
+        
+        const token = jwt.sign({_id: employee._id},'privateKey');
+        res.header('x-auth-token',token).send(employee)
+    
 });
 
 router.put('/:name', async(req, res) =>{
@@ -46,7 +55,7 @@ router.put('/:name', async(req, res) =>{
 
     const employee= await Employee.findOneAndUpdate({name:req.params.name},
         { name: req.body.name,
-        department:req.body.department,
+        department:req.body.depatment,
          project:req.body.project,
          salary:req.body.salary,
          e_mail:req.body.e_mail,

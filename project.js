@@ -1,5 +1,7 @@
 const mongoose= require('mongoose');
 const employees = require('./routes/employees');  //exported file
+const login =require("./routes/login");
+const auth = require('./routes/middleware/auth.js')
 const express= require ('express');
 const app= express();
 app.use(function(req, res, next) {
@@ -12,14 +14,15 @@ app.use(function(req, res, next) {
 
 mongoose.connect('mongodb://localhost/project', { useNewUrlParser: true })
         .then (() => console.log('connected to mongoDB '))
-        .catch(err => console.error ('could not connect to mongoDB', err));
-
+        .catch(err => console.error ('could not connect to mongoDB', err))
         mongoose.set('useNewUrlParser', true);
         mongoose.set('useFindAndModify', false);
         mongoose.set('useCreateIndex', true); mongoose.set('useFindAndModify', false);
 
 app.use(express.json());
 app.use('/api/employees', employees);
+app.use('/api/login',login);
+app.use(auth);
 
 const port=process.env.port||8000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
